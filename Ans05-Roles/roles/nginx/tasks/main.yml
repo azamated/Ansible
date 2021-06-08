@@ -1,0 +1,21 @@
+---
+- name: Ensure apt cache is updated & nginx is installed
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+  notify: Ensure nginx is added to autostart and started
+
+- name: Remove nginx default conifg
+  file:
+    path: '{{ nginx_nginx_path }}/sites-enabled/default'
+    state: absent
+  notify: Reload Nginx
+
+- name: Setting nginx geeneral configuration
+  template:
+    src: 'nginx.conf.j2'
+    dest: '{{ nginx_nginx_path }}/nginx.conf'
+  notify: Reload Nginx
+
+

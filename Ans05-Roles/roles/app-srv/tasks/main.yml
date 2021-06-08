@@ -1,0 +1,19 @@
+---
+- name: Ensure virtualhosts direcry is created
+  file:
+    path: "{{ item.path }}"
+    state: "{{ item.state }}"
+  loop:
+     - { path: '{{ www_root }}/{{ hostname1  }}', state: 'directory' }
+     - { path: '{{ www_root }}/{{ hostname2  }}', state: 'directory' }
+
+- name: Add virtual host config file
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+  loop:
+     - { src: 'virtualhost.com.conf.j2', dest: '{{ nginx_path }}/conf.d/{{ hostname1 }}.conf' }
+     - { src: 'index.html.j2', dest: '{{ www_root }}/{{ hostname1 }}/index.html' }
+     - { src: 'virtualhost.com.conf.j2', dest: '{{ nginx_path }}/conf.d/{{ hostname2 }}.conf' }
+     - { src: 'index.html.j2', dest: '{{ www_root }}/{{ hostname2 }}/index.html' } 
+  notify: Reload Nginx

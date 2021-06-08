@@ -1,0 +1,15 @@
+---
+- hosts: all
+  gather_facts: yes
+  vars:
+    www_root: /var/www/html
+    nginx_path: /etc/nginx
+    hostname: host1
+  become: true
+
+  tasks:
+  - name: Distribution
+    debug: msg="{{ ansible_distribution }}"
+ 
+  roles:
+    - nginx_setup

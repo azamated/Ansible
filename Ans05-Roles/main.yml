@@ -1,0 +1,11 @@
+---
+- hosts: all
+  vars:
+    www_root: /var/www/html
+    nginx_path: /etc/nginx
+    hostname1: app-server1.com
+    hostname2: app-server2.com 
+  become: true
+  roles:
+    - nginx
+    - app-srv

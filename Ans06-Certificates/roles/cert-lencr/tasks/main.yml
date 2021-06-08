@@ -1,0 +1,39 @@
+
+- name: Ensure apt cache is updated & letsencrypt is installed
+  apt:
+    name: letsencrypt
+    state: present
+    update_cache: true
+
+- name: Create letsencrypt directory
+  file: 
+    name: /var/www/letsencrypt
+    state: directory
+
+- name: Install nginx site for letsencrypt requests
+  template:
+    src: nginx-http.j2
+    dest: /etc/nginx/sites-enabled/http.conf
+  notify: Reload Nginx
+
+- name: Test nginx before flushing handlers
+  shell: nginx -t
+
+- name: Force all notified handlers to run at this point
+  meta: flush_handlers
+
+- name: Create letsencrypt certificate
+  shell: letsencrypt certonly -n --webroot -w /var/www/letsencrypt -m azamated@gmail.com --agree-tos -d {{ hostname }}
+  args:
+    creates: /etc/letsencrypt/live/{{ hostname }}
+
+- name: Generate dhparams
+  shell: openssl dhparam -out /etc/nginx/dhparams.pem 2048
+  args:
+    creates: /etc/nginx/dhparams.pem
+
+- name: Add letsencrypt cronjob for cert renewal
+  cron:
+    name: letsencrypt_renewal
+    special_time: weekly
+    job: /usr/bin/letsencrypt --renew certonly -n --webroot -w /var/www/letsencrypt -m azamated@gmail.com --agree-tos -d {{ hostname }} --staging --deploy-hook "/etc/init.d/nginx reload"

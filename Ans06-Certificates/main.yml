@@ -1,0 +1,12 @@
+---
+- hosts: all
+  vars:
+    www_root: /var/www/html
+    nginx_path: /etc/nginx
+    hostname: azamat-at-amirakulov-com.devops.RELAB.srwx.net
+  become: true
+
+  roles:
+    - nginx
+    - cert-lencr
+    - app-srv

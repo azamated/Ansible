@@ -1,0 +1,11 @@
+---
+- name: Ensure nginx is added to autostart and started
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+
+- name: Reload Nginx
+  service:
+    name: nginx
+    state: reloaded

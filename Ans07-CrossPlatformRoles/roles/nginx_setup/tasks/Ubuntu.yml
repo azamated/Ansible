@@ -1,0 +1,8 @@
+---
+- name: Ensure apt cache is updated & nginx is installed
+  apt:
+    name: nginx
+    state: present
+    update_cache: true
+  notify: Ensure nginx is added to autostart and started
+

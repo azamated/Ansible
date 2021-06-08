@@ -1,0 +1,6 @@
+#Variables template
+
+do_token = ""
+local_pub_key = ""
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""

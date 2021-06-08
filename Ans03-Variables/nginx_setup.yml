@@ -1,0 +1,50 @@
+---
+- name: Setup and configure nginx
+  hosts: all
+  vars:
+    port: 8089
+    hostname: host1
+    nginx_path: /etc/nginx
+    www_root: /var/www/html
+  become: true
+
+  tasks:
+  - name: Ensure apt cache is update & nginx is installed
+    apt:
+      name: nginx
+      state: present
+      update_cache: true
+    notify:
+    - Ensure nginx is added to autostart and started
+
+  - name: Ensure virtualhosts direcry is created
+    file:
+      path: "{{ item.path }}"
+      state: "{{ item.state }}"
+    loop:
+      - { path: '{{ www_root }}/virtualhost1.com', state: 'directory' }
+      - { path: '{{ www_root }}/virtualhost2.com', state: 'directory' }
+
+  - name: Add virtual host config file and push new index.html
+    template:
+      src: "{{ item.src }}"
+      dest: "{{ item.dest }}"
+    loop:
+      - { src: 'virtualhost.com.conf.j2', dest: '{{ nginx_path }}/conf.d/virtualhost1.com.conf' }
+      - { src: 'index.html.j2', dest: '{{ www_root }}/virtualhost1.com/index.html' }
+      - { src: 'virtualhost.com.conf.j2', dest: '{{ nginx_path }}/conf.d/virtualhost2.com.conf' }
+      - { src: 'index.html.j2', dest: '{{ www_root }}/virtualhost2.com/index.html' }
+      - { src: 'nginx.conf.j2', dest: '{{ nginx_path }}/nginx.conf' }
+    notify: Reload Nginx
+
+  handlers:
+  - name: Ensure nginx is added to autostart and started
+    service:
+      name: nginx
+      state: started
+      enabled: yes
+
+  - name: Reload Nginx
+    service:
+      name: nginx
+      state: reloaded

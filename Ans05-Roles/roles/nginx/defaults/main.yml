@@ -1,0 +1,4 @@
+---
+nginx_hostname: server1
+nginx_vport: 80
+nginx_nginx_path: /etc/nginx
