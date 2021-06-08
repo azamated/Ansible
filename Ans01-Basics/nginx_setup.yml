@@ -1,0 +1,19 @@
+- name: install nginx
+  hosts: all
+  become: yes
+  
+  tasks:
+  - name: Ensure apr cache is update & nginx is installed
+    apt:
+      name: nginx 
+      state: present
+      update_cache: true
+    notify:
+    - Ensure nginx is added to autostart and started 
+
+  handlers:
+  - name: Ensure nginx is added to autostart and started
+    service:
+      name: nginx
+      state: started
+      enabled: yes
